@@ -89,48 +89,58 @@ export const CardComputer = (props, context) => {
         );
       } else if (data.target_dept) {
         bodyBlock = (
-          <Section title="Department Job Transfer">
-            <LabeledList>
-              {!!data.modify_lastlog && (
-                <LabeledList.Item label="Latest Transfer">
-                  {data.modify_lastlog}
+          <Fragment>
+            <Section title="Department Job Transfer">
+              <LabeledList>
+                {!!data.modify_lastlog && (
+                  <LabeledList.Item label="Latest Transfer">
+                    {data.modify_lastlog}
+                  </LabeledList.Item>
+                )}
+                <LabeledList.Item label="Department">
+                  {data.jobs_dept.map(v => (
+                    <Button
+                      selected={v === data.modify_rank}
+                      key={v} content={v}
+                      onClick={() => act("assign", { assign_target: v })} />
+                  ))}
                 </LabeledList.Item>
-              )}
-              <LabeledList.Item label="Department">
-                {data.jobs_dept.map(v => (
+                <LabeledList.Item label="Retirement">
                   <Button
-                    selected={v === data.modify_rank}
-                    key={v} content={v}
-                    onClick={() => act("assign", { assign_target: v })} />
-                ))}
-              </LabeledList.Item>
-              <LabeledList.Item label="Retirement">
-                <Button
-                  selected={"Civilian" === data.modify_rank}
-                  key="Civilian" content="Civilian"
-                  onClick={() => act("assign",
-                    { assign_target: "Civilian" })} />
-              </LabeledList.Item>
-              <LabeledList.Item label="Demotion">
-                <Button
-                  selected={"Demoted" === data.modify_rank}
-                  key="Demoted" content="Demoted"
-                  tooltip="Civilian access, 'demoted' title."
-                  color="red" icon="times"
-                  onClick={() => act("demote")} />
-              </LabeledList.Item>
-              {!!data.canterminate && (
-                <LabeledList.Item label="Non-Crew">
-                  <Button
-                    disabled={"Terminated" === data.modify_rank}
-                    key="Terminate" content="Terminated"
-                    tooltip="Zero access. Not crew."
-                    color="red" icon="eraser"
-                    onClick={() => act("terminate")} />
+                    selected={"Civilian" === data.modify_rank}
+                    key="Civilian" content="Civilian"
+                    onClick={() => act("assign",
+                      { assign_target: "Civilian" })} />
                 </LabeledList.Item>
-              )}
-            </LabeledList>
-          </Section>
+                <LabeledList.Item label="Demotion">
+                  <Button
+                    selected={"Demoted" === data.modify_rank}
+                    key="Demoted" content="Demoted"
+                    tooltip="Civilian access, 'demoted' title."
+                    color="red" icon="times"
+                    onClick={() => act("demote")} />
+                </LabeledList.Item>
+                {!!data.canterminate && (
+                  <LabeledList.Item label="Non-Crew">
+                    <Button
+                      disabled={"Terminated" === data.modify_rank}
+                      key="Terminate" content="Terminated"
+                      tooltip="Zero access. Not crew."
+                      color="red" icon="eraser"
+                      onClick={() => act("terminate")} />
+                  </LabeledList.Item>
+                )}
+              </LabeledList>
+            </Section>
+            <Section title="Specialization">
+              {data.alt_titles.map(v => (
+                <Button
+                  key={v.title} content={v.title}
+                  color={v.color ? v.color : ""}
+                  onClick={() => act("assign_alt_title", { assign_target: v.title })} />
+              ))}
+            </Section>
+          </Fragment>
         );
       } else {
         bodyBlock = (
@@ -274,7 +284,14 @@ export const CardComputer = (props, context) => {
                     onClick={() => act("terminate")} />
                 </LabeledList.Item>
               </LabeledList>
-
+            </Section>
+            <Section title="Specialization">
+              {data.alt_titles.map(v => (
+                <Button
+                  key={v.title} content={v.title}
+                  color={v.color ? v.color : ""}
+                  onClick={() => act("assign_alt_title", { assign_target: v.title })} />
+              ))}
             </Section>
             <Section title="Card Skins">
               {data.card_skins.map(v => (

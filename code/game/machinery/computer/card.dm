@@ -123,6 +123,31 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 			"skin" = skin)))
 	return formatted
 
+/obj/machinery/computer/card/proc/format_job_alt_titles(add_custom)
+	var/list/formatted = list()
+	if(!(modify && modify.rank))
+		return formatted
+	if(add_custom)
+		formatted.Add(list(list(
+			"title" = "Custom",
+			"color" =  (modify.assignment == "Demoted" || modify.assignment == "Terminated") ? "grey" : "violet")))
+	var/datum/job/jobdatum = SSjobs.GetJob(modify.rank)
+	for(var/title in jobdatum.alt_titles)
+		var/color = null
+		if(title == modify.assignment)
+			color = "green"
+		else if(modify.assignment == "Demoted" || modify.assignment == "Terminated")
+			color = "grey"
+		formatted.Add(list(list(
+			"title" = title,
+			"color" = color)))
+	return formatted
+
+/obj/machinery/computer/card/proc/is_this_already_my_job(new_rank, new_assignment)
+	if(modify.rank == new_rank && modify.assignment == new_assignment)
+		return TRUE
+	return FALSE
+
 /obj/machinery/computer/card/verb/eject_id()
 	set category = null
 	set name = "Eject ID Card"
@@ -332,7 +357,7 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 					data["canterminate"] = has_idchange_access()
 				else
 					data["account_number"] = modify ? modify.associated_account_number : null
-					data["jobs_top"] = list("Captain", "Custom")
+					data["jobs_top"] = list("Captain")
 					data["jobs_engineering"] = GLOB.engineering_positions
 					data["jobs_medical"] = GLOB.medical_positions
 					data["jobs_science"] = GLOB.science_positions
@@ -346,6 +371,7 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 					data["current_skin"] = modify.icon_state
 					data["card_skins"] = format_card_skins(get_station_card_skins())
 					data["all_centcom_skins"] = is_centcom() ? format_card_skins(get_centcom_card_skins()) : FALSE
+				data["alt_titles"] = format_job_alt_titles(TRUE)
 
 		if(IDCOMPUTER_SCREEN_SLOTS) // JOB SLOTS
 			data["job_slots"] = format_job_slots()
@@ -459,39 +485,21 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 					return FALSE
 				if(!job_in_department(SSjobs.GetJob(t1)))
 					return FALSE
-			if(t1 == "Custom")
-				var/temp_t = sanitize(reject_bad_name(copytext_char(input("Enter a custom job assignment.", "Assignment"), 1, MAX_MESSAGE_LEN), TRUE))
-				//let custom jobs function as an impromptu alt title, mainly for sechuds
-				if(temp_t && scan && modify)
-					var/oldrank = modify.getRankAndAssignment()
-					SSjobs.log_job_transfer(modify.registered_name, oldrank, temp_t, scan.registered_name, null)
-					modify.lastlog = "[station_time_timestamp()]: Reassigned by \"[scan.registered_name]\" from \"[oldrank]\" to \"[temp_t]\"."
-					modify.assignment = temp_t
-					log_game("[key_name(usr)] ([scan.assignment]) has reassigned \"[modify.registered_name]\" from \"[oldrank]\" to \"[temp_t]\".")
-					SSjobs.notify_dept_head(modify.rank, "[scan.registered_name] has transferred \"[modify.registered_name]\" the \"[oldrank]\" to \"[temp_t]\".")
+			var/list/access = list()
+			if(is_centcom() && islist(get_centcom_access(t1)))
+				access = get_centcom_access(t1)
 			else
-				var/list/access = list()
-				if(is_centcom() && islist(get_centcom_access(t1)))
-					access = get_centcom_access(t1)
-				else
-					var/datum/job/jobdatum
-					for(var/jobtype in typesof(/datum/job))
-						var/datum/job/J = new jobtype
-						if(ckey(J.title) == ckey(t1))
-							jobdatum = J
-							break
-					if(!jobdatum)
-						to_chat(usr, "<span class='warning'>No log exists for this job: [t1]</span>")
-						return
-					if(length(jobdatum.alt_titles))
-						var/list/AT = jobdatum.alt_titles
-						var/standart_Assignment = assignment
-						AT += assignment
-						assignment = input("Select a title", "Job title selection") as null|anything in AT
-						if(!assignment)
-							assignment = standart_Assignment
+				var/datum/job/jobdatum
+				for(var/jobtype in typesof(/datum/job))
+					var/datum/job/J = new jobtype
+					if(ckey(J.title) == ckey(t1))
+						jobdatum = J
+						break
+				if(!jobdatum)
+					to_chat(usr, "<span class='warning'>No log exists for this job: [t1]</span>")
+					return
 
-					access = jobdatum.get_access()
+				access = jobdatum.get_access()
 
 				var/jobnamedata = modify.getRankAndAssignment()
 				log_game("[key_name(usr)] ([scan.assignment]) has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[assignment]\".")
@@ -516,6 +524,36 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 				modify.access = access
 				modify.rank = t1
 				modify.assignment = assignment
+			regenerate_id_name()
+			return
+		if("assign_alt_title")
+			if(!modify)
+				return
+			if(target_dept && !job_in_department(SSjobs.GetJob(modify.rank), FALSE))
+				playsound(get_turf(src), 'sound/machines/buzz-sigh.ogg', 50, 0)
+				to_chat(usr, "<span class='warning'>Reassigning someone outside your department requires a full ID computer.</span>")
+				return
+			if(modify.assignment == "Terminated")
+				playsound(get_turf(src), 'sound/machines/buzz-sigh.ogg', 50, 0)
+				to_chat(usr, "<span class='warning'>The person has no actual assignment.</span>")
+				return
+			var/assignment = params["assign_target"]
+			if(is_this_already_my_job(modify.rank, assignment))
+				// Back to the default title on click on the currently selected button (check-uncheck)
+				// just to make the interface a bit more user-friendly
+				assignment = modify.rank
+			if(assignment == "Custom")
+				//let custom jobs function as an impromptu alt title, mainly for sechuds
+				assignment = sanitize(reject_bad_name(copytext_char(input("Enter a custom job assignment.", "Assignment"), 1, MAX_MESSAGE_LEN), TRUE))
+				if(!(assignment && scan && modify))
+					return
+			var/oldrank = modify.getRankAndAssignment()
+			modify.assignment = assignment
+			var/newrank = modify.getRankAndAssignment()
+			SSjobs.log_job_transfer(modify.registered_name, oldrank, newrank, scan.registered_name, null)
+			modify.lastlog = "[station_time_timestamp()]: Reassigned by \"[scan.registered_name]\" from \"[oldrank]\" to \"[newrank]\"."
+			log_game("[key_name(usr)] ([scan.assignment]) has reassigned \"[modify.registered_name]\" from \"[oldrank]\" to \"[newrank]\".")
+			SSjobs.notify_dept_head(modify.rank, "[scan.registered_name] has transferred \"[modify.registered_name]\" the \"[oldrank]\" to \"[newrank]\".")
 			regenerate_id_name()
 			return
 		if("demote")
