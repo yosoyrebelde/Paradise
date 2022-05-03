@@ -473,7 +473,9 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 			if(!modify)
 				return
 			var/t1 = params["assign_target"]
-			var/assignment = t1 // для имени профессии
+			if(is_this_already_my_job(t1, t1))
+				// Ignore assignments that won't change anything
+				return
 			if(target_dept)
 				if(modify.assignment == "Demoted")
 					playsound(get_turf(src), 'sound/machines/buzz-sigh.ogg', 50, 0)
@@ -502,13 +504,13 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 				access = jobdatum.get_access()
 
 				var/jobnamedata = modify.getRankAndAssignment()
-				log_game("[key_name(usr)] ([scan.assignment]) has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[assignment]\".")
+				log_game("[key_name(usr)] ([scan.assignment]) has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[t1]\".")
 				if(t1 == "Civilian")
-					message_admins("[key_name_admin(usr)] has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[assignment]\".")
+					message_admins("[key_name_admin(usr)] has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[t1]\".")
 
 				SSjobs.log_job_transfer(modify.registered_name, jobnamedata, t1, scan.registered_name, null)
-				modify.lastlog = "[station_time_timestamp()]: Reassigned by \"[scan.registered_name]\" from \"[jobnamedata]\" to \"[assignment]\"."
-				SSjobs.notify_dept_head(t1, "[scan.registered_name] has transferred \"[modify.registered_name]\" the \"[jobnamedata]\" to \"[assignment]\".")
+				modify.lastlog = "[station_time_timestamp()]: Reassigned by \"[scan.registered_name]\" from \"[jobnamedata]\" to \"[t1]\"."
+				SSjobs.notify_dept_head(t1, "[scan.registered_name] has transferred \"[modify.registered_name]\" the \"[jobnamedata]\" to \"[t1]\".")
 				if(modify.owner_uid)
 					SSjobs.slot_job_transfer(modify.rank, t1)
 
@@ -523,7 +525,7 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 
 				modify.access = access
 				modify.rank = t1
-				modify.assignment = assignment
+				modify.assignment = t1
 			regenerate_id_name()
 			return
 		if("assign_alt_title")
