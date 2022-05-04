@@ -646,10 +646,10 @@ SUBSYSTEM_DEF(jobs)
 	if(tgtcard)
 		var/mob/M = tgtcard.getPlayer()
 		for(var/datum/job/job in occupations)
-			if(tgtcard.assignment && tgtcard.assignment == job.title)
-				jobs_to_formats[job.title] = "green" // the job they already have is pre-selected
-			else if(tgtcard.assignment == "Demoted" || tgtcard.assignment == "Terminated")
+			if(tgtcard.assignment == "Demoted" || tgtcard.assignment == "Terminated")
 				jobs_to_formats[job.title] = "grey"
+			else if(tgtcard.rank && tgtcard.rank == job.title)
+				jobs_to_formats[job.title] = "green" // the job they already have is pre-selected
 			else if(!job.would_accept_job_transfer_from_player(M))
 				jobs_to_formats[job.title] = "grey" // jobs which are karma-locked and not unlocked for this player are discouraged
 			else if((job.title in GLOB.command_positions) && istype(M) && M.client && job.available_in_playtime(M.client))
@@ -658,8 +658,8 @@ SUBSYSTEM_DEF(jobs)
 				jobs_to_formats[job.title] = "teal" // jobs with nobody doing them at all are encouraged
 			else if(job.total_positions >= 0 && job.current_positions >= job.total_positions)
 				jobs_to_formats[job.title] = "grey" // jobs that are full (no free positions) are discouraged
-		if(tgtcard.assignment == "Demoted" || tgtcard.assignment == "Terminated")
-			jobs_to_formats["Custom"] = "grey"
+		//if(tgtcard.assignment == "Demoted" || tgtcard.assignment == "Terminated")
+		//	jobs_to_formats["Custom"] = "grey"
 	return jobs_to_formats
 
 

@@ -114,6 +114,7 @@ export const CardComputer = (props, context) => {
                 </LabeledList.Item>
                 <LabeledList.Item label="Demotion">
                   <Button
+                    disabled={"Terminated" === data.modify_rank}
                     selected={"Demoted" === data.modify_rank}
                     key="Demoted" content="Demoted"
                     tooltip="Civilian access, 'demoted' title."
