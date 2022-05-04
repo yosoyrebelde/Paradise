@@ -690,19 +690,17 @@ SUBSYSTEM_DEF(jobs)
 	var/datum/job/tgt_job = GetJob(jobtitle)
 	if(!tgt_job)
 		return
-	if(!tgt_job.department_head[1])
-		return
-	var/boss_title = tgt_job.department_head[1]
-	var/obj/item/pda/target_pda
-	for(var/obj/item/pda/check_pda in GLOB.PDAs)
-		if(check_pda.ownrank == boss_title)
-			target_pda = check_pda
-			break
-	if(!target_pda)
-		return
-	var/datum/data/pda/app/messenger/PM = target_pda.find_program(/datum/data/pda/app/messenger)
-	if(PM && PM.can_receive())
-		PM.notify("<b>Автоматическое Оповещение: </b>\"[antext]\" (Невозможно Ответить)", 0) // the 0 means don't make the PDA flash
+	for(var/boss_title in tgt_job.department_head)
+		var/obj/item/pda/target_pda
+		for(var/obj/item/pda/check_pda in GLOB.PDAs)
+			if(check_pda.ownrank == boss_title)
+				target_pda = check_pda
+				break
+		if(!target_pda)
+			continue
+		var/datum/data/pda/app/messenger/PM = target_pda.find_program(/datum/data/pda/app/messenger)
+		if(PM && PM.can_receive())
+			PM.notify("<b>Автоматическое Оповещение: </b>\"[antext]\" (Невозможно Ответить)", 0) // the 0 means don't make the PDA flash
 
 /datum/controller/subsystem/jobs/proc/notify_by_name(target_name, antext)
 	// Used to notify a specific crew member based on their real_name
