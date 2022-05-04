@@ -100,17 +100,18 @@ export const CardComputer = (props, context) => {
                 <LabeledList.Item label="Department">
                   {data.jobs_dept.map(v => (
                     <Button
-                      selected={v === data.modify_rank}
                       key={v} content={v}
+                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
                 <LabeledList.Item label="Retirement">
-                  <Button
-                    selected={"Civilian" === data.modify_rank}
-                    key="Civilian" content="Civilian"
-                    onClick={() => act("assign",
-                      { assign_target: "Civilian" })} />
+                  {data.jobs_civilian.map(v => (
+                    <Button
+                      key={v} content={v}
+                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      onClick={() => act("assign", { assign_target: v })} />
+                  ))}
                 </LabeledList.Item>
                 <LabeledList.Item label="Demotion">
                   <Button

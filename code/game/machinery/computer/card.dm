@@ -354,6 +354,7 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 					return data
 				else if(target_dept)
 					data["jobs_dept"] = get_subordinates(scan.rank, FALSE)
+					data["jobs_civilian"] = GLOB.civilian_positions
 					data["canterminate"] = has_idchange_access()
 				else
 					data["account_number"] = modify ? modify.associated_account_number : null
@@ -367,10 +368,10 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 					data["jobs_civilian"] = GLOB.civilian_positions
 					data["jobs_karma"] = GLOB.whitelisted_positions
 					data["jobs_centcom"] = get_all_centcom_jobs()
-					data["jobFormats"] = SSjobs.format_jobs_for_id_computer(modify)
 					data["current_skin"] = modify.icon_state
 					data["card_skins"] = format_card_skins(get_station_card_skins())
 					data["all_centcom_skins"] = is_centcom() ? format_card_skins(get_centcom_card_skins()) : FALSE
+				data["jobFormats"] = SSjobs.format_jobs_for_id_computer(modify)
 				data["alt_titles"] = format_job_alt_titles(TRUE)
 
 		if(IDCOMPUTER_SCREEN_SLOTS) // JOB SLOTS
