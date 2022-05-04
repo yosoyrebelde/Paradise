@@ -131,6 +131,8 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 		formatted.Add(list(list(
 			"title" = "Custom",
 			"color" =  (modify.assignment == "Demoted" || modify.assignment == "Terminated") ? "grey" : "violet")))
+	if(is_centcom())
+		return formatted
 	var/datum/job/jobdatum = SSjobs.GetJob(modify.rank)
 	for(var/title in jobdatum.alt_titles)
 		var/color = null
@@ -504,29 +506,29 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 
 				access = jobdatum.get_access()
 
-				var/jobnamedata = modify.getRankAndAssignment()
-				log_game("[key_name(usr)] ([scan.assignment]) has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[t1]\".")
-				if(t1 == "Civilian")
-					message_admins("[key_name_admin(usr)] has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[t1]\".")
+			var/jobnamedata = modify.getRankAndAssignment()
+			log_game("[key_name(usr)] ([scan.assignment]) has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[t1]\".")
+			if(t1 == "Civilian")
+				message_admins("[key_name_admin(usr)] has reassigned \"[modify.registered_name]\" from \"[jobnamedata]\" to \"[t1]\".")
 
-				SSjobs.log_job_transfer(modify.registered_name, jobnamedata, t1, scan.registered_name, null)
-				modify.lastlog = "[station_time_timestamp()]: Reassigned by \"[scan.registered_name]\" from \"[jobnamedata]\" to \"[t1]\"."
-				SSjobs.notify_dept_head(t1, "[scan.registered_name] has transferred \"[modify.registered_name]\" the \"[jobnamedata]\" to \"[t1]\".")
-				if(modify.owner_uid)
-					SSjobs.slot_job_transfer(modify.rank, t1)
+			SSjobs.log_job_transfer(modify.registered_name, jobnamedata, t1, scan.registered_name, null)
+			modify.lastlog = "[station_time_timestamp()]: Reassigned by \"[scan.registered_name]\" from \"[jobnamedata]\" to \"[t1]\"."
+			SSjobs.notify_dept_head(t1, "[scan.registered_name] has transferred \"[modify.registered_name]\" the \"[jobnamedata]\" to \"[t1]\".")
+			if(modify.owner_uid)
+				SSjobs.slot_job_transfer(modify.rank, t1)
 
-				var/mob/living/carbon/human/H = modify.getPlayer()
-				if(istype(H))
-					if(jobban_isbanned(H, t1))
-						to_chat(usr, "<span class='warning'><FONT size = 4>ЦК не одобряет данную должность для этого сотрудника. Причиной этому могла послужить его профнепригодность для данной профессии.</span>") //На русском, потому что не все поймут на инглише
-						message_admins("[ADMIN_FULLMONTY(H)] tried to make an appointment to the position [t1], in possible violation of their job ban.")
-						return
-					if(H.mind)
-						H.mind.playtime_role = t1
+			var/mob/living/carbon/human/H = modify.getPlayer()
+			if(istype(H))
+				if(jobban_isbanned(H, t1))
+					to_chat(usr, "<span class='warning'><FONT size = 4>ЦК не одобряет данную должность для этого сотрудника. Причиной этому могла послужить его профнепригодность для данной профессии.</span>") //На русском, потому что не все поймут на инглише
+					message_admins("[ADMIN_FULLMONTY(H)] tried to make an appointment to the position [t1], in possible violation of their job ban.")
+					return
+				if(H.mind)
+					H.mind.playtime_role = t1
 
-				modify.access = access
-				modify.rank = t1
-				modify.assignment = t1
+			modify.access = access
+			modify.rank = t1
+			modify.assignment = t1
 			regenerate_id_name()
 			return
 		if("assign_alt_title")
