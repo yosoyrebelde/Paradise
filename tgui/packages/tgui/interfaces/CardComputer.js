@@ -101,7 +101,7 @@ export const CardComputer = (props, context) => {
                   {data.jobs_dept.map(v => (
                     <Button
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
@@ -109,7 +109,7 @@ export const CardComputer = (props, context) => {
                   {data.jobs_civilian.map(v => (
                     <Button
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
@@ -180,9 +180,8 @@ export const CardComputer = (props, context) => {
                 <LabeledList.Item label="Special">
                   {data.jobs_top.map(v => (
                     <Button
-                      selected={v === data.modify_rank}
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
@@ -190,7 +189,7 @@ export const CardComputer = (props, context) => {
                   {data.jobs_engineering.map(v => (
                     <Button
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
@@ -198,7 +197,7 @@ export const CardComputer = (props, context) => {
                   {data.jobs_medical.map(v => (
                     <Button
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
@@ -206,51 +205,46 @@ export const CardComputer = (props, context) => {
                   {data.jobs_science.map(v => (
                     <Button
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
                 <LabeledList.Item label="Security">
                   {data.jobs_security.map(v => (
                     <Button
-                      selected={v === data.modify_rank}
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
                 <LabeledList.Item label="Service">
                   {data.jobs_service.map(v => (
                     <Button
-                      selected={v === data.modify_rank}
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
                 <LabeledList.Item label="Supply">
                   {data.jobs_supply.map(v => (
                     <Button
-                      selected={v === data.modify_rank}
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
                 <LabeledList.Item label="Civilan">
                   {data.jobs_civilian.map(v => (
                     <Button
-                      selected={v === data.modify_rank}
                       key={v} content={v}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}
                 </LabeledList.Item>
                 <LabeledList.Item label="Restricted">
                   {data.jobs_karma.map(v => (
                     <Button
-                      selected={v === data.modify_rank}
-                      color={data.jobFormats[v] ? data.jobFormats[v] : ""}
+                      color={data.job_formats[v] ? data.job_formats[v] : ""}
                       key={v} content={v}
                       onClick={() => act("assign", { assign_target: v })} />
                   ))}

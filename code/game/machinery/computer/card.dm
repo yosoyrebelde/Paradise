@@ -385,7 +385,7 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 					data["current_skin"] = modify.icon_state
 					data["card_skins"] = format_card_skins(get_station_card_skins())
 					data["all_centcom_skins"] = is_centcom() ? format_card_skins(get_centcom_card_skins()) : FALSE
-				data["jobFormats"] = SSjobs.format_jobs_for_id_computer(modify)
+				data["job_formats"] = SSjobs.format_jobs_for_id_computer(modify)
 				data["alt_titles"] = format_job_alt_titles(TRUE)
 
 		if(IDCOMPUTER_SCREEN_SLOTS) // JOB SLOTS
