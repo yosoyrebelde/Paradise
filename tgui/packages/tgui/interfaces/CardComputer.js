@@ -259,10 +259,9 @@ export const CardComputer = (props, context) => {
                   <LabeledList.Item label="CentCom">
                     {data.jobs_centcom.map(v => (
                       <Button
-                        selected={v === data.modify_rank}
-                        color={data.jobFormats[v]
-                          ? data.jobFormats[v]
-                          : "purple"}
+                        color={data.job_formats_centcom[v]
+                          ? data.job_formats_centcom[v]
+                          : ""}
                         key={v} content={v}
                         onClick={() => act("assign", { assign_target: v })} />
                     ))}

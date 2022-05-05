@@ -115,6 +115,17 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 
 	return formatted
 
+/obj/machinery/computer/card/proc/format_centcom_jobs()
+	var/list/formatted = list()
+	for(var/job in get_all_centcom_jobs())
+		if(modify.assignment == "Demoted" || modify.assignment == "Terminated")
+			formatted[job] = "grey"
+		else if(job == modify.rank)
+			formatted[job] = "green"
+		else
+			formatted[job] = "purple"
+	return formatted
+
 /obj/machinery/computer/card/proc/format_card_skins(list/card_skins)
 	var/list/formatted = list()
 	for(var/skin in card_skins)
@@ -369,7 +380,8 @@ GLOBAL_VAR_INIT(time_last_changed_position, 0)
 					data["jobs_supply"] = GLOB.supply_positions - "Head of Personnel"
 					data["jobs_civilian"] = GLOB.civilian_positions
 					data["jobs_karma"] = GLOB.whitelisted_positions
-					data["jobs_centcom"] = get_all_centcom_jobs()
+					data["jobs_centcom"] = is_centcom() ? get_all_centcom_jobs() : FALSE
+					data["job_formats_centcom"] = is_centcom() ? format_centcom_jobs() : FALSE
 					data["current_skin"] = modify.icon_state
 					data["card_skins"] = format_card_skins(get_station_card_skins())
 					data["all_centcom_skins"] = is_centcom() ? format_card_skins(get_centcom_card_skins()) : FALSE
