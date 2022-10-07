@@ -23,7 +23,7 @@
 	tool_behaviour = TOOL_MULTITOOL
 	hitsound = 'sound/weapons/tap.ogg'
 	var/shows_wire_information = FALSE // shows what a wire does if set to TRUE
-	var/obj/machinery/buffer // simple machine buffer for device linkage
+	var/obj/buffer // simple machine buffer for device linkage
 	var/datum/multitool_menu_host/menu
 
 /obj/item/multitool/Initialize()
