@@ -211,7 +211,7 @@
 ////////////////////////////////
 /datum/multitool_menu/idtag/mass_driver
 	holder_type = /obj/machinery/mass_driver
-	
+
 /datum/multitool_menu/idtag/mass_driver/get_tag()
 	var/obj/machinery/mass_driver/my_holder = holder
 	return my_holder.id_tag
@@ -237,6 +237,30 @@
 	if(my_holder.id_tag == new_tag)
 		return
 	my_holder.id_tag = new_tag
+
+////////////////////////////////
+//	airlock_electronics
+////////////////////////////////
+/datum/multitool_menu/idtag/airlock_electronics
+	holder_type = /obj/item/airlock_electronics
+
+/datum/multitool_menu/idtag/airlock_electronics/get_tag()
+	var/obj/item/airlock_electronics/my_holder = holder
+	return my_holder.id_tag
+
+/datum/multitool_menu/idtag/airlock_electronics/set_tag(new_tag)
+	if(notify_if_restricted_tag(new_tag))
+		return
+	var/obj/item/airlock_electronics/my_holder = holder
+	if(my_holder.id_tag == new_tag)
+		return
+	my_holder.id_tag = new_tag
+
+/datum/multitool_menu/idtag/airlock_electronics/proc/notify_if_restricted_tag(new_tag)
+	if(new_tag in GLOB.roundstart_poddoor_tags)
+		service_message("Entering this tag is restricted by NT security protocols. Please try another tag or contact an authorized CentCom officer.")
+		return TRUE
+	return FALSE
 
 ////////////////////////////////
 //	Multitool menu "frequency_and_tag"
@@ -293,7 +317,7 @@
 ////////////////////////////////
 /datum/multitool_menu/idtag/freq/vent_pump
 	holder_type = /obj/machinery/atmospherics/unary/vent_pump
-	
+
 /datum/multitool_menu/idtag/freq/vent_pump/get_tag()
 	var/obj/machinery/atmospherics/unary/vent_pump/my_holder = holder
 	return my_holder.id_tag
@@ -326,7 +350,7 @@
 ////////////////////////////////
 /datum/multitool_menu/idtag/freq/vent_scrubber
 	holder_type = /obj/machinery/atmospherics/unary/vent_scrubber
-	
+
 /datum/multitool_menu/idtag/freq/vent_scrubber/get_tag()
 	var/obj/machinery/atmospherics/unary/vent_scrubber/my_holder = holder
 	return my_holder.id_tag
@@ -359,7 +383,7 @@
 ////////////////////////////////
 /datum/multitool_menu/idtag/freq/outlet_injector
 	holder_type = /obj/machinery/atmospherics/unary/outlet_injector
-	
+
 /datum/multitool_menu/idtag/freq/outlet_injector/get_tag()
 	var/obj/machinery/atmospherics/unary/outlet_injector/my_holder = holder
 	return my_holder.id_tag
@@ -389,7 +413,7 @@
 ////////////////////////////////
 /datum/multitool_menu/idtag/freq/dp_vent_pump
 	holder_type = /obj/machinery/atmospherics/binary/dp_vent_pump
-	
+
 /datum/multitool_menu/idtag/freq/dp_vent_pump/get_tag()
 	var/obj/machinery/atmospherics/binary/dp_vent_pump/my_holder = holder
 	return my_holder.id_tag
@@ -628,7 +652,7 @@
 			my_holder.unlink_output()
 		else
 			return ..()
-		
+
 /datum/multitool_menu/idtag/freq/general_air_control/large_tank_control/proc/is_null_idtag()
 	var/buffer_tag = multitool?.buffer?.multitool_menu?.get_tag()
 	if(!buffer_tag)

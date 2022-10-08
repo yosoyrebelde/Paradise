@@ -24,6 +24,8 @@
 	var/region_min = REGION_GENERAL
 	var/region_max = REGION_COMMAND
 
+	var/id_tag
+
 /obj/item/airlock_electronics/Initialize(mapload)
 	. = ..()
 	if(!length(door_accesses_list))
@@ -32,6 +34,13 @@
 				"name" = get_access_desc(access),
 				"id" = access))
 	current_door_accesses_list = door_accesses_list
+
+/obj/item/airlock_electronics/init_multitool_menu()
+	multitool_menu = new /datum/multitool_menu/idtag/airlock_electronics(src)
+
+/obj/item/airlock_electronics/multitool_act(mob/user, obj/item/I)
+	. = TRUE
+	multitool_menu.interact(user, I)
 
 /obj/item/airlock_electronics/attack_self(mob/user)
 	if(!ishuman(user) && !isrobot(user))
