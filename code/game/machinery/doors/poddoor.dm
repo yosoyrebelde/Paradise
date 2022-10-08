@@ -1,3 +1,5 @@
+GLOBAL_LIST_EMPTY(roundstart_poddoor_tags)
+
 /obj/machinery/door/poddoor
 	name = "blast door"
 	desc = "A heavy duty blast door that opens mechanically."
@@ -14,6 +16,11 @@
 	damage_deflection = 70
 	var/id_tag = 1.0
 	var/protected = 1
+
+/obj/machinery/door/poddoor/Initialize(mapload)
+	. = ..()
+	if(mapload && id_tag && is_station_level(z) && !(id_tag in GLOB.roundstart_poddoor_tags))
+		GLOB.roundstart_poddoor_tags.Add(id_tag)
 
 /obj/machinery/door/poddoor/preopen
 	icon_state = "open"
