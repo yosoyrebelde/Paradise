@@ -47,6 +47,121 @@
 		return ..()
 
 /obj/item/folder/attack_self(mob/user as mob)
+	ui_interact(user)
+
+/obj/item/folder/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = FALSE, datum/tgui/master_ui = null, datum/ui_state/state = GLOB.default_state)
+	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
+	if(!ui)
+		ui = new(user, src, ui_key, "Clipboard", name, 300, 300, master_ui, state)
+		//ui = new(user, src, ui_key, "KitchenSink", name, 300, 300, master_ui, state)
+		ui.set_autoupdate(FALSE)
+		ui.open()
+
+/obj/item/folder/ui_data(mob/user)
+	var/list/data = list()
+	data["pages"] = get_pages()
+	return data
+
+/obj/item/folder/ui_act(action, params)
+	if(..())
+		return
+	switch(action)
+		if("MSG")
+			message_admins("[params["msg"]]")
+			. = TRUE
+		if("swap")
+			var/index1 = text2num(params["index1"]) + 1
+			var/index2 = text2num(params["index2"]) + 1
+			swap_pages(usr, index1, index2)
+			. = TRUE
+		if("remove")
+			var/index = text2num(params["index"]) + 1
+			remove_page(usr, index)
+			. = TRUE
+		if("open")
+			var/index = text2num(params["index"]) + 1
+			open_page(usr, index)
+			. = TRUE
+	update_icon()
+
+/obj/item/folder/proc/get_pages()
+	var/list/data = list()
+
+	for(var/page in src)
+		if(!is_page_type(page))
+			continue
+		data.Add(list(get_page_data(page)))
+
+	return data
+
+/obj/item/folder/proc/get_page_data(obj/page)
+	var/list/page_data = list()
+
+	page_data["name"] = page.name
+	page_data["description"] = page.desc //examine()
+
+	if(istype(page, /obj/item/paper))
+		page_data["type"] = "paper"
+		page_data["preview_text"] = get_preview_text(page)
+		// add language check
+		// add stamps info
+
+	else if(istype(page, /obj/item/photo))
+		page_data["type"] = "foto"
+
+	else if(istype(page, /obj/item/paper_bundle))
+		page_data["type"] = "paper_bundle"
+
+	else if(istype(page, /obj/item/documents))
+		page_data["type"] = "documents"
+
+	return page_data
+
+/obj/item/folder/proc/get_preview_text(obj/item/paper/paper)
+	if(!istype(paper))
+		return
+	if(!paper.info)
+		return
+	var/text_no_html = regex(@"[\n\r\t]+", "g").Replace_char(paper.info, "") // remove newlines
+	text_no_html = regex(@"<.*?>", "g").Replace_char(text_no_html, "") // remove html tags
+	return text_no_html
+
+/obj/item/folder/proc/is_page_type(thing)
+	if( istype(thing, /obj/item/paper) \
+		|| istype(thing, /obj/item/photo) \
+		|| istype(thing, /obj/item/paper_bundle) \
+		|| istype(thing, /obj/item/documents))
+		return TRUE
+	return FALSE
+
+/obj/item/folder/proc/swap_pages(mob/user, index1, index2)
+	var/list/new_contents = contents.Copy()
+	new_contents.Swap(index1, index2)
+	contents = new_contents
+
+/obj/item/folder/proc/remove_page(mob/user, index)
+	var/obj/item/page = contents[index]
+	page.loc = usr.loc
+	user.put_in_hands(page)
+
+/obj/item/folder/proc/open_page(mob/user, index)
+	var/page = contents[index]
+
+	if(istype(page, /obj/item/paper))
+		var/obj/item/paper/page_paper = page
+		page_paper.show_content(user) // checks
+
+	else if(istype(page, /obj/item/photo))
+		var/obj/item/photo/page_photo = page
+		page_photo.show(user)
+
+	else if(istype(page, /obj/item/paper_bundle))
+		var/obj/item/paper_bundle/page_bundle = page
+		page_bundle.show_content(user) // checks
+
+
+/* TODEL
+/obj/item/folder/attack_self(mob/user as mob)
 	var/dat = {"<meta charset="UTF-8"><title>[name]</title>"}
 
 	for(var/obj/item/paper/P in src)
@@ -93,6 +208,7 @@
 		attack_self(usr)
 		update_icon()
 	return
+*/
 
 /obj/item/folder/documents
 	name = "folder- 'TOP SECRET'"

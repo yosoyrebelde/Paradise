@@ -1,0 +1,18 @@
+@import "../colors";
+
+.DraggableList__Item:active {
+  cursor: move;
+}
+
+.DraggableList__DraggedItem {
+  background-color: green;
+  opacity: 0.33;
+}
+
+.DraggableList__DeletedItem {
+  display: none;
+}
+
+.DraggableList__SelectedItem {
+
+}
