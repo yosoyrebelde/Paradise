@@ -62,8 +62,8 @@
 /obj/item/paper/ui_interact(mob/user, ui_key = "main", datum/tgui/ui = null, force_open = FALSE, datum/tgui/master_ui = null, datum/ui_state/state = GLOB.default_state)
 	ui = SStgui.try_update_ui(user, src, ui_key, ui, force_open)
 	if(!ui)
-		//ui = new(user, src, ui_key, "PaperSheet", name, 300, 300, master_ui, state)
-		ui = new(user, src, ui_key, "KitchenSink", name, 300, 300, master_ui, state)
+		ui = new(user, src, ui_key, "PaperSheet", name, 300, 300, master_ui, state)
+		//ui = new(user, src, ui_key, "KitchenSink", name, 300, 300, master_ui, state)
 		ui.open()
 
 /obj/item/paper/ui_data(mob/user)
@@ -109,6 +109,9 @@
 /obj/item/paper/ui_act(action, params)
 	if(..())
 		return
+
+	if(action == "MSG")
+		message_admins("[params["msg"]]")
 
 /*
 /obj/item/paper/proc/show_content(var/mob/user, var/forceshow = 0, var/forcestars = 0, var/infolinks = 0, var/view = 1)
@@ -181,6 +184,8 @@
 	return
 
 /obj/item/paper/attack_self(mob/living/user as mob)
+	ui_interact(user)
+/*
 	user.examinate(src)
 	if(rigged && (SSholiday.holidays && SSholiday.holidays[APRIL_FOOLS]))
 		if(spam_flag == 0)
@@ -189,7 +194,7 @@
 			spawn(20)
 				spam_flag = 0
 	return
-
+*/
 /obj/item/paper/attack_ai(var/mob/living/silicon/ai/user as mob)
 	var/dist
 	if(istype(user) && user.current) //is AI
