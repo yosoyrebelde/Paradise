@@ -4,34 +4,58 @@
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "doorctrl"
 	power_channel = ENVIRON
-	var/id = null
-	var/safety_z_check = 1
-	var/normaldoorcontrol = 0
-	var/desiredstate = 0 // Zero is closed, 1 is open.
-	var/specialfunctions = 1
-	/*
-	Bitflag, 	1= open
-				2= idscan,
-				4= bolts
-				8= shock
-				16= door safties
 
-	*/
-
-	var/exposedwires = 0
-	var/wires = 3
-	/*
-	Bitflag,	1=checkID
-				2=Network Access
-	*/
-
-	anchored = 1.0
+	anchored = TRUE
 	use_power = IDLE_POWER_USE
 	idle_power_usage = 2
 	active_power_usage = 4
 
+	var/exposedwires = 0
+	/**
+	Bitflag,	1=checkID
+				2=Network Access
+	*/
+	var/wires = 3
+
+	var/obj/item/assembly/device
+
+	/*
+	Variables that are only needed to generate a device object.
+	*/
+ 	/// 0- poddoor control, 1- airlock control
+	var/normaldoorcontrol = 0
+	/// The button controls things that have matching id tag
+	var/id = null
+	/// Should it only work on the same z-level
+	var/safety_z_check = 1
+	/// Zero is closed, 1 is open.
+	var/desiredstate = 0
+	/// Bitflag, see assembly file
+	var/specialfunctions = 1
+
 /obj/machinery/door_control/alt
 	icon_state = "altdoorctrl"
+
+/obj/machinery/door_control/Initialize(mapload)
+	. = ..()
+	build_device()
+
+/obj/machinery/door_control/Destroy()
+	QDEL_NULL(device)
+	return ..()
+
+/obj/machinery/door_control/proc/build_device()
+	if(normaldoorcontrol)
+		var/obj/item/assembly/control/airlock/airlock_device = new(src)
+		airlock_device.specialfunctions = specialfunctions
+		airlock_device.desiredstate = desiredstate
+		device = airlock_device
+	else
+		var/obj/item/assembly/control/poddoor/poddoor_device = new(src)
+		device = poddoor_device
+	var/obj/item/assembly/control/my_device = device
+	my_device.id = id
+	my_device.safety_z_check = safety_z_check
 
 /obj/machinery/door_control/attack_ai(mob/user as mob)
 	if(wires & 2)
@@ -54,53 +78,11 @@
 	if(user.can_advanced_admin_interact())
 		return attack_hand(user)
 
-/obj/machinery/door_control/proc/do_main_action(mob/user as mob)
-	if(normaldoorcontrol)
-		for(var/obj/machinery/door/airlock/D in GLOB.airlocks)
-			if(safety_z_check && D.z != z || D.id_tag != id)
-				continue
-			if(specialfunctions & OPEN)
-				if(D.density)
-					spawn(0)
-						D.open()
-				else
-					spawn(0)
-						D.close()
-			if(desiredstate == 1)
-				if(specialfunctions & IDSCAN)
-					D.aiDisabledIdScanner = 1
-				if(specialfunctions & BOLTS)
-					D.lock()
-				if(specialfunctions & SHOCK)
-					D.electrify(-1)
-				if(specialfunctions & SAFE)
-					D.safe = 0
-			else
-				if(specialfunctions & IDSCAN)
-					D.aiDisabledIdScanner = 0
-				if(specialfunctions & BOLTS)
-					D.unlock()
-				if(specialfunctions & SHOCK)
-					D.electrify(0)
-				if(specialfunctions & SAFE)
-					D.safe = 1
-
-	else
-		for(var/obj/machinery/door/poddoor/M in GLOB.airlocks)
-			if(safety_z_check && M.z != z || M.id_tag != id)
-				continue
-			if(M.density)
-				spawn(0)
-					M.open()
-			else
-				spawn(0)
-					M.close()
-
-	desiredstate = !desiredstate
-
 /obj/machinery/door_control/attack_hand(mob/user as mob)
 	add_fingerprint(user)
 	if(stat & (NOPOWER|BROKEN))
+		return
+	if(device?.cooldown > 0)
 		return
 
 	if(!allowed(user) && (wires & 1) && !user.can_advanced_admin_interact())
@@ -111,10 +93,10 @@
 
 	use_power(5)
 	icon_state = "[initial(icon_state)]-inuse"
-
-	do_main_action(user)
-
 	addtimer(CALLBACK(src, PROC_REF(update_icon)), 15)
+
+	if(device)
+		INVOKE_ASYNC(device, TYPE_PROC_REF(/obj/item/assembly, activate))
 
 /obj/machinery/door_control/power_change()
 	..()
