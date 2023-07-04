@@ -1,4 +1,8 @@
 /obj/item/assembly/control
+	icon_state = "control"
+	materials = list(MAT_METAL=100, MAT_GLASS=50)
+	origin_tech = "programming=1"
+	multitool_menu_type = /datum/multitool_menu/idtag/door_control
 	/// The control controls things that have matching id tag
 	var/id = null
 	/// Should it only work on the same z-level
@@ -11,7 +15,13 @@
 	// Cooldown check
 	return ..()
 
+/obj/item/assembly/control/multitool_act(mob/living/user, obj/item/I)
+	. = TRUE
+	multitool_menu_interact(user, I)
+
 /obj/item/assembly/control/poddoor
+	name = "blast door controller"
+	desc = "A small electronic device able to control a blast door remotely."
 
 /obj/item/assembly/control/poddoor/activate()
 	if(!..())
@@ -28,7 +38,13 @@
 			spawn(0)
 				M.close()
 
+/obj/item/assembly/control/poddoor/multitool_act(mob/living/user, obj/item/I)
+	. = TRUE
+	to_chat(user, span_warning("Похоже, это устройство надёжно защищено, изменить настройки нельзя."))
+
 /obj/item/assembly/control/airlock
+	name = "airlock controller"
+	desc = "A small electronic device able to control an airlock remotely."
 	/**
 	Bitflag, 	1= open
 				2= idscan

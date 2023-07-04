@@ -239,6 +239,30 @@
 	my_holder.id_tag = new_tag
 
 ////////////////////////////////
+//	Door control
+////////////////////////////////
+/datum/multitool_menu/idtag/door_control
+	holder_type = /obj/item/assembly/control
+	
+/datum/multitool_menu/idtag/door_control/get_tag()
+	var/obj/item/assembly/control/my_holder = holder
+	return my_holder.id
+
+/datum/multitool_menu/idtag/door_control/set_tag(new_tag)
+	if(notify_if_restricted_tag(new_tag))
+		return
+	var/obj/item/assembly/control/my_holder = holder
+	if(my_holder.id == new_tag)
+		return
+	my_holder.id = new_tag
+
+/datum/multitool_menu/idtag/door_control/proc/notify_if_restricted_tag(new_tag)
+	if(new_tag in GLOB.restricted_door_tags)
+		service_message("Ввод тега \"[new_tag]\" ограничен протоколами безопасности. Попробуйте ввести другой тег.")
+		return TRUE
+	return FALSE
+
+////////////////////////////////
 //	Multitool menu "frequency_and_tag"
 //  ABSTRACT
 ////////////////////////////////
