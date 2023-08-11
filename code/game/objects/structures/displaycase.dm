@@ -13,7 +13,7 @@
 	var/alert = TRUE
 	var/open = FALSE
 	var/openable = TRUE
-	var/obj/item/airlock_electronics/electronics
+	var/obj/item/access_control/electronics
 	var/start_showpiece_type = null //add type for items on display
 	var/list/start_showpieces = list() //Takes sublists in the form of list("type" = /obj/item/bikehorn, "trophy_message" = "henk")
 	var/trophy_message = ""
@@ -179,17 +179,17 @@
 	desc = "The wooden base of a display case."
 	icon = 'icons/obj/stationobjs.dmi'
 	icon_state = "glassbox_chassis"
-	var/obj/item/airlock_electronics/electronics
+	var/obj/item/access_control/electronics
 
 /obj/structure/displaycase_chassis/attackby(obj/item/I, mob/user, params)
-	if(istype(I, /obj/item/airlock_electronics))
+	if(istype(I, /obj/item/access_control))
 		to_chat(user, "<span class='notice'>You start installing the electronics into [src]...</span>")
 		playsound(src.loc, I.usesound, 50, 1)
 		if(do_after(user, 30, target = src))
 			if(user.drop_transfer_item_to_loc(I, src))
 				add_fingerprint(user)
 				electronics = I
-				to_chat(user, "<span class='notice'>You install the airlock electronics.</span>")
+				to_chat(user, "<span class='notice'>You install the electronics.</span>")
 
 	else if(istype(I, /obj/item/stack/sheet/glass))
 		var/obj/item/stack/sheet/glass/G = I

@@ -15,6 +15,7 @@
 		/obj/item/intercom_electronics,
 		/obj/item/apc_electronics,
 		/obj/item/tracker_electronics,
+		/obj/item/access_control,
 		/obj/item/stock_parts,
 		/obj/item/vending_refill,
 		/obj/item/mounted/frame/light_fixture,

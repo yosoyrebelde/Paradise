@@ -76,6 +76,7 @@ GLOBAL_LIST_EMPTY(airlock_overlays)
 	var/lockdownbyai = FALSE
 	var/justzap = FALSE
 	var/obj/item/airlock_electronics/electronics
+	var/obj/item/access_control/access_electronics
 	var/shockCooldown = FALSE //Prevents multiple shocks from happening
 	var/obj/item/note //Any papers pinned to the airlock
 	var/previous_airlock = /obj/structure/door_assembly //what airlock assembly mineral plating was applied to
@@ -1420,6 +1421,9 @@ About the new airlock wires panel:
 
 /obj/machinery/door/airlock/deconstruct(disassembled = TRUE, mob/user)
 	if(!(flags & NODECONSTRUCT))
+
+		operating = FALSE
+
 		var/obj/structure/door_assembly/DA
 		if(assemblytype)
 			DA = new assemblytype(loc)
@@ -1440,23 +1444,31 @@ About the new airlock wires panel:
 				DA.obj_integrity = DA.max_integrity * 0.5
 		if(user)
 			to_chat(user, "<span class='notice'>You remove the airlock electronics.</span>")
-		var/obj/item/airlock_electronics/ae
-		if(!electronics)
+
+		if(!access_electronics)
 			if(istype(src, /obj/machinery/door/airlock/syndicate))
-				ae = new/obj/item/airlock_electronics/syndicate(loc)
+				access_electronics = new /obj/item/access_control/syndicate(src)
 			else
-				ae = new/obj/item/airlock_electronics(loc)
+				access_electronics = new /obj/item/access_control(src)
+
 			check_access()
-			ae.selected_accesses = req_access
-			ae.one_access = check_one_access
-		else
-			ae = electronics
-			electronics = null
-			ae.forceMove(loc)
+			access_electronics.selected_accesses = req_access
+			access_electronics.one_access = check_one_access
+
+		if(!electronics)
+			electronics = new /obj/item/airlock_electronics(src)
+
 		if(emagged)
-			ae.icon_state = "door_electronics_smoked"
-			operating = 0
-	qdel(src)
+			access_electronics.icon_state = "access-control-smoked"
+			electronics.icon_state = "door_electronics_smoked"
+	
+		access_electronics.forceMove(loc)
+		electronics.forceMove(loc)
+
+		access_electronics = null
+		electronics = null
+
+		qdel(src)
 
 /obj/machinery/door/airlock/proc/note_type() //Returns a string representing the type of note pinned to this airlock
 	if(!note)

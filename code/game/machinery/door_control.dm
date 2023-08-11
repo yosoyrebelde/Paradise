@@ -18,7 +18,7 @@
 	var/wires = 3
 
 	var/obj/item/assembly/device
-	var/obj/item/airlock_electronics/access_board
+	var/obj/item/access_control/access_board
 	/// Was it constructed by players or just spawned on the map.
 	/// Needed because the button can be spawned without a device and still has to work.
 	var/constructed = FALSE
@@ -68,7 +68,7 @@
 	my_device.safety_z_check = safety_z_check
 
 /obj/machinery/door_control/proc/build_access_board()
-	access_board = new /obj/item/airlock_electronics(src)
+	access_board = new /obj/item/access_control(src)
 	access_board.selected_accesses = req_access
 	access_board.one_access = check_one_access
 
@@ -110,7 +110,7 @@
 				user.visible_message("[user] tries to install [W] into the button frame.", "You try to install [W] into the button frame.")
 				return
 		
-		if(!access_board && istype(W, /obj/item/airlock_electronics))
+		if(!access_board && istype(W, /obj/item/access_control))
 			if(user.drop_transfer_item_to_loc(W, src))
 				user.visible_message("[user] installs [W] into the button frame.", "You install [W] into the button frame.")
 				access_board = W
