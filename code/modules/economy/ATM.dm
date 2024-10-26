@@ -78,9 +78,15 @@ log transactions
 
 /obj/machinery/atm/proc/reconnect_database()
 	for(var/obj/machinery/computer/account_database/DB in GLOB.machines)
-		if(DB.z == z && !(DB.stat & NOPOWER) && DB.activated)
+		if(DB.stat & NOPOWER || !DB.activated)
+			continue
+		if(is_station_level(z) && is_station_level(DB.z))
 			linked_db = DB
 			break
+		else
+			if(DB.z == z)
+				linked_db = DB
+				break
 
 
 /obj/machinery/atm/update_icon_state()
