@@ -7,6 +7,7 @@
 '2024-11-03':
   Antoonij:
   - bugfix: some runtime fixes (#6094)
+  - bugfix: ghosts can now examine humans (#6119)
   Daeberdir:
   - bugfix: October - Mapfixes. (#6078)
   FlitchTime:
@@ -17,3 +18,19 @@
   - tweak: Correct calculation of acids protection (#6102)
   Vladisvell:
   - bugfix: Cult fixes (#6090)
+  - bugfix: dna vault hotfix (#6122)
+'2024-11-04':
+  Daeberdir:
+  - bugfix: Incorrect `mechanized` limb attaching. (#6125)
+  - bugfix: Light fixture attach_chain blocks. (#6124)
+  - bugfix: Fixed phazon noclip on teleport forbidden areas (#6121)
+  - bugfix: Correct input target for `mindscan`. (#6120)
+  PiroMage:
+  - bugfix: 'Nova Station #12 Patch  (#6115)'
+  - bugfix: Conveyor Belt and Disposal Outlet on Cyberiad & Celestation. (#6109)
+  PlayerUnknown14:
+  - add: GSBussy doll (#6104)
+  Sheya:
+  - add: CE toolbet now can hold RCD and one more item (#6048)
+  Valtor:
+  - add: species age restrictions (#6101)
